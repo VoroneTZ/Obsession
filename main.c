@@ -41,6 +41,18 @@ STRING* FString21="В своих снах я мог добится...";
 STRING* FString22="Справедливости... и ее...";
 STRING* FString23="Его же рот этого казино!";
 STRING* FString24="Ты опять пришел ко мне?";
+STRING* FString25="Давай, сделай то, ради чего пришел";
+STRING* FString26="Это все равно ничего не изменит";
+STRING* FString27="Без препаратов уснуть всё тяжелее";
+STRING* FString28="Пытаюсь убежать от реальности...";
+STRING* FString29="Что это?!";
+STRING* FString30="Неужели...";
+STRING* FString31="Это я...";
+STRING* FString32="Ты должен понять...";
+STRING* FString33="Мы больше не вместе...";
+STRING* FString34="Мяу...";
+STRING* FString35="А ведь ни кто не нужен,";
+STRING* FString36="когда есть такой хороший котик.";
 
 BMAP* bDialog = "dialog.dds";
 
@@ -111,6 +123,28 @@ PANEL* panel_dialog_boss2 =
 	flags =  OVERLAY;
 }
 
+PANEL* panel_dialog_boss3 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString25, "System#50b", 1, NULL); 
+	digits(50,125, FString26, "System#50b", 1, NULL); 
+	digits(50,200, FString3, "System#50b", 1, NULL);
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_boss3_end =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString29, "System#50b", 1, NULL); 
+	digits(50,125, FString30, "System#50b", 1, NULL); 
+	digits(50,200, FString31, "System#50b", 1, NULL);
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
 PANEL* panel_dialog_boss1_end =
 {
 	pos_x = 380;
@@ -171,6 +205,57 @@ PANEL* panel_dialog_level2_2 =
 	layer = 11; 
 	flags =  OVERLAY;
 }
+
+PANEL* panel_dialog_level3_1 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString27, "System#50b", 1, NULL); 
+	digits(50,125, FString28, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_level3_2 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString15, "System#50b", 1, NULL); 
+	digits(50,125, FString16, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_level4_1 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString32, "System#50b", 1, NULL); 
+	digits(50,125, FString33, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_level4_2 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString34, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_level4_3 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString35, "System#50b", 1, NULL); 
+	digits(50,125, FString36, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+
 
 function FPlayerDeath()
 {
@@ -255,6 +340,80 @@ action platform_bar1()
 	}
 }
 
+action platform_city1()
+{	var pos=0;
+	while(1)
+	{
+		if (pos==0){
+		while(vec_dist(my.x,player.x)>200)
+		{		
+			wait(-1);
+		}
+		wait(-1);
+		FPlayerCanMove=0;
+		var i;
+		for (i=0; i<1500; i++) 
+		{
+		my.z =my.z+1;
+		player.z = player.z+1;
+		wait(1);
+		}
+		FPlayerCanMove=1;
+		pos=1;
+		}
+		if (pos==1 && player.z<400)
+		{
+			pos=0;
+			my.z=my.z-500;
+		}
+		wait(1);
+	}
+}
+
+
+action AGhost()
+{
+		set(my,PASSABLE);
+	my.z=my.z-80;
+	if (my.x>player.x){my.pan=90;}
+   if (my.x<player.x){my.pan=270;}	
+	var i;
+   for (i=0; i<500; i++) 
+   {
+   	c_move(me,vector(0,1,0),vector(0,0,0),IGNORE_SPRITES | GLIDE);
+   	if (vec_dist(my.x,player.x)  <150)
+   	if (FPlayerAttack<30)
+      			{
+      				boss_coins=boss_coins-1;
+      				FHitPlayer();		
+      			}
+   	wait(1);
+   }	
+   ent_remove(me);
+}
+
+action ALastBoss()
+{
+	while(vec_dist(my.x,player.x)>500)
+	{
+		wait(1);	
+	}
+	FPlayerCanMove=0;
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level4_1,SHOW);
+	wait(-2);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level4_1,SHOW);
+	for (i=0; i<500; i++)
+	{
+		my.x=my.x-1;
+		wait(1);
+	}
+	my.z=1000;
+	
+}
+
 action ABoss1SuperPower()
 {
 	set(my,PASSABLE);
@@ -267,6 +426,27 @@ action ABoss1SuperPower()
    	c_move(me,vector(0,1,0),vector(0,0,0),IGNORE_SPRITES | GLIDE);
    	if (vec_dist(my.x,player.x)  <150)
    	if (lcanjump==true)
+      			{
+      				boss_coins=boss_coins-1;
+      				FHitPlayer();		
+      			}
+   	wait(1);
+   }	
+   ent_remove(me);
+}
+
+action ABoss2SuperPower()
+{
+	set(my,PASSABLE);
+	my.z=my.z+80;
+	if (my.x>player.x){my.pan=90;}
+   if (my.x<player.x){my.pan=270;}	
+	var i;
+   for (i=0; i<500; i++) 
+   {
+   	c_move(me,vector(0,1,0),vector(0,0,0),IGNORE_SPRITES | GLIDE);
+   	if (vec_dist(my.x,player.x)  <150)
+   	if (fcrouch==false)
       			{
       				boss_coins=boss_coins-1;
       				FHitPlayer();		
@@ -359,6 +539,131 @@ wait(-1);
 	}	
 	
 }
+
+function FLoadLevel3()
+{
+	FCutScene=0;
+	FPlayerCanMove = 1;
+	media_stop(FMusic);
+	level_load("intro.wmb");
+camera.arc= 60;
+wait(-1);
+	panel_black.alpha = 100;
+		var i=1;
+	
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+	}
+	
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level3_1,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level3_1,SHOW);
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level3_2,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level3_2,SHOW);
+	wait(-1);
+	
+		panel_black.alpha = 0;
+	var i=50;
+	while (i>1)
+	{
+	while (panel_black.alpha <100)
+	{
+		panel_black.alpha += 8*time_step; 
+		if (i>1)
+		media_tune(FMusic,i,0,0);
+		i=i-0.2;
+		wait(2);
+	}
+	panel_black.alpha = 100;
+		
+	}
+	
+		level_load("lvl3.wmb");
+	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
+		camera.arc=20;
+		FMusic =	media_play("guns_n_roses-welcome_to_the_jungle.mid",NULL,50);
+		
+			media_tune(FMusic,1,0,0);
+	panel_black.alpha = 100;
+		var i=1;
+		wait(-2);
+		FCheckPlayer();
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+		media_tune(FMusic,i,0,0);
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+		media_tune(FMusic,50,0,0);	
+	}
+	
+		set(panel_hud, SHOW);
+	
+			while (FCutScene==0)
+	{
+		FCheckPlayer();
+		wait(1);
+	}	
+	
+}
+
+function FLoadLevel4()
+{
+	FCutScene=0;
+	FPlayerCanMove = 1;
+	media_stop(FMusic);
+
+	
+		level_load("lvl4.wmb");
+	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
+		camera.arc=20;
+	//	FMusic =	media_play("guns_n_roses-welcome_to_the_jungle.mid",NULL,50);
+		
+		//	media_tune(FMusic,1,0,0);
+	panel_black.alpha = 100;
+		var i=1;
+		wait(-2);
+		FCheckPlayer();
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+	//	media_tune(FMusic,i,0,0);
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+	//	media_tune(FMusic,50,0,0);	
+	}
+	
+		set(panel_hud, SHOW);
+	
+			while (FCutScene==0)
+	{
+		FCheckPlayer();
+		wait(1);
+	}	
+	
+}
+
 
 
 action ABoss1()
@@ -549,8 +854,8 @@ action ABoss1()
 
 action ABoss2()
 {
-	boss_coins =1000;
-	my.skill5=5;
+	boss_coins =2000;
+	my.skill5=7;
 	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
    vec_set(my.max_x,vector(20,20,150));
    
@@ -727,7 +1032,208 @@ action ABoss2()
 		
 	}
 	
-//	FLoadLevel2();
+	FLoadLevel3();
+}
+
+action ABoss3()
+{
+	boss_coins =3000;
+	my.skill5=10;
+	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
+   vec_set(my.max_x,vector(20,20,150));
+   
+   	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
+   vec_set(my.max_x,vector(20,20,150));
+	
+ 	my.min_z *= 0.5;
+ 	var speed_down = 0;   // downward speed by gravity
+   var anim_percent = 0; // animation percentage
+   var lplayer_direction=0;
+   VECTOR vFeet;
+   vec_for_min(vFeet,me); // vFeet.z = distance from player origin to lowest vertex
+   var lattacktimer;
+   var lattackpercent;
+   
+   var LAnimPercent=0;
+   if (my.x>player.x){my.pan=90;}
+   if (my.x<player.x){my.pan=270;}	
+   random_seed(0);
+   while (vec_dist(my.x,player.x)>500) 			//ждем игрока
+	{
+		my.frame = 1;
+		wait(1);
+	}															// запускаем диалог
+	
+		FPlayerCanMove = 0;	
+		set(panel_dialog,SHOW);
+		set(panel_dialog_boss3,SHOW);
+		while(key_enter==false){
+			LAnimPercent=LAnimPercent+1*time_step;
+			if (LAnimPercent>20){LAnimPercent=0;}
+			my.frame = 2;
+			if (LAnimPercent>10){my.frame = 1;}
+			wait(1);
+		}	
+		reset(panel_dialog,SHOW);	
+		reset(panel_dialog_boss3,SHOW);	
+		FPlayerCanMove = 1;
+		
+															// начало битвы
+		
+	while (my.skill5>0)
+	{
+		if (my.x>player.x){my.pan=90;}
+      if (my.x<player.x){my.pan=270;}
+      var dist_down; 
+      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | USE_BOX) > 0)
+         dist_down = my.z + vFeet.z - target.z; // get distance between player's feet and the ground
+      else
+         dist_down = 0;
+		
+	   if (dist_down > 0)  // above floor, fall down with increasing speed
+         dist_down = clamp(dist_down,0,accelerate(speed_down,5,0.1));
+      else                // on or below floor, set downward speed to zero
+         speed_down = 0;
+      lplayer_direction =0; 
+         
+      if (random (5) > 4.99)	// пуляем супер способность
+      	{
+      		my.frame = 10;
+      		wait(-0.2);	
+      		my.frame = 11;
+      		wait(-0.2);
+      		my.frame = 12;
+      		ent_create("hook2.dds",my.x,ABoss2SuperPower);
+      		wait(-0.1);
+      		my.frame = 1;
+      		wait(-0.1);
+      		my.frame = 2;
+      	}
+      	
+      	if (random (5) < 0.01)	// пуляем супер способность
+      	{
+      		my.frame = 13;
+      		wait(-0.2);	
+      		my.frame = 14;
+      		wait(-0.2);
+      		my.frame = 15;
+      		ent_create("hook1.dds",my.x,ABoss1SuperPower);
+      		wait(-0.1);
+      		my.frame = 1;
+      		wait(-0.1);
+      		my.frame = 2;
+      	}
+      
+      if (vec_dist(my.x,player.x) >my.skill3) // пока игрок далеко- идем к нему
+      {
+      	lattacktimer = my.skill1;
+      	//	if (my.x>player.x){lplayer_direction=-1;}
+      	//	if (my.x<player.x){
+      			lplayer_direction=1;
+      			//}
+      			
+      					if (my.x>player.x){my.pan=90;}
+      		if (my.x<player.x){my.pan=270;}		
+      		
+      		LAnimPercent = LAnimPercent+my.skill4*0.1*time_step;
+      		if (LAnimPercent>4){LAnimPercent=1;}
+      		
+      		my.frame=LAnimPercent+2;		
+      }
+      else
+      {
+      	if (lattacktimer>0)
+      	{
+      		lattacktimer=lattacktimer-1;
+      		lattackpercent=0;
+      		my.frame = 1;
+      	}
+      	else
+      	{
+      		my.frame = 7+lattackpercent/30;
+      		if (FPlayerAttack>50)
+      		{
+      			my.frame = 16;	
+      			my.skill5=my.skill5-0.5; //получение урона
+      			wait(-1);
+      		}
+      		lattackpercent=lattackpercent+10*time_step;
+      		if (lattackpercent>90)
+      		{
+      			lattacktimer= my.skill1;
+      			lattackpercent=0;      			
+      		}
+      		if (lattackpercent>50)
+      		{
+      			if (vec_dist(my.x,player.x)  <my.skill3)
+      			{
+      				FHitPlayer();
+      				boss_coins = boss_coins-1;
+      				//lattacktimer = my.skill1;
+      				
+      			}
+      		}
+      	} 
+      	}
+      	var dist_ahead = (lplayer_direction)*time_step;
+      
+      dist_ahead = sign(dist_ahead)*(abs(dist_ahead) + 0.5*dist_down); // adapt the speed on slopes	
+         
+       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | GLIDE); // move the player
+
+	wait(1);	
+	}	
+	set(panel_dialog,SHOW);
+	set(panel_dialog_boss1_end,SHOW);
+	FPlayerCanMove = 0;
+	player.z=my.z;
+	while(key_enter==false){
+			LAnimPercent=LAnimPercent+1*time_step;
+			if (LAnimPercent>20){LAnimPercent=0;}
+			my.frame = 1;
+			if (LAnimPercent>10){my.frame = 2;}
+			wait(1);
+		}
+		reset(panel_dialog,SHOW);
+	reset(panel_dialog_boss1_end,SHOW);
+		my.frame = 17;	
+	FPlayerCanMove = 0;
+	FPlayerPickupCount = FPlayerPickupCount+boss_coins;
+	while(player.x<6908)
+	{
+		FCutScene=1;
+		player.x=player.x+8*time_step;
+		wait(1);
+	}	media_stop(FMusic);
+	player.z=player.z-80;
+	FCutScene=2;
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_boss3_end,SHOW);
+	wait(-2);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_boss3_end,SHOW);	
+	wait(-1);	
+	player.x=player.x+50;
+	FCutScene=4;	
+			panel_black.alpha = 0;
+	var i=50;
+	while (i>1)
+	{
+	while (panel_black.alpha <100)
+	{
+			player.z=player.z-10;
+		panel_black.alpha += 8*time_step; 
+		if (i>1)
+		media_tune(FMusic,i,0,0);
+		i=i-0.2;
+		wait(2);
+	}
+	panel_black.alpha = 100;
+		
+	}
+	
+	FLoadLevel4();
 }
 
 
@@ -756,10 +1262,10 @@ action ANPC()
 
 		my.frame = 1;
 		var dist_down; 
-      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | USE_BOX) > 0)
+      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_SPRITES | IGNORE_PASSABLE | USE_BOX) > 0)
          dist_down = my.z + vFeet.z - target.z; // get distance between player's feet and the ground
       else
-         dist_down = 0;
+         dist_down = -1;
 		
 	   if (dist_down > 0)  // above floor, fall down with increasing speed
          dist_down = clamp(dist_down,0,accelerate(speed_down,5,0.1));
@@ -821,7 +1327,7 @@ action ANPC()
       
       dist_ahead = sign(dist_ahead)*(abs(dist_ahead) + 0.5*dist_down); // adapt the speed on slopes	
          
-       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | GLIDE); // move the player
+       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | IGNORE_SPRITES | GLIDE); // move the player
        wait(1);
 	}
 	set(my,PASSABLE);
@@ -973,6 +1479,7 @@ action APlayer()
 		}
 		if (FCutScene==2){my.frame=16;}
 			if (FCutScene==3){my.frame=17;}
+			if (FCutScene==4){my.frame=12;}
       wait(1);
 	}
 	my.frame=12;
@@ -1096,8 +1603,8 @@ function main()
 	
 //	if (game_load("Save",0)<=0){game_save("Save",0,SV_VARS);}
 	
-	FContinueGame();
-//FLoadLevel2();	
+//	FContinueGame();
+FLoadLevel4();	
 	wait(-1);	
 	sky_color.red = 0;
 sky_color.green = 0;
