@@ -23,8 +23,49 @@ STRING* FString2="Сейчас ты у меня получишь!";
 STRING* FString3="*Нажмите Enter для продолжения";
 STRING* FString4="Это еще не конец, тебе просто повезло!";
 STRING* FString5="Радуйся своей 'победе'...";
+STRING* FString7="VoroneTZ представляет";
+STRING* FString8="специально для theBatya Game Jam 2021";
+STRING* FString9="Очередная пьяная и одинокая ночь...";
+STRING* FString10="Очередные безумные сны...";
+STRING* FString11="Ночь 1";
+STRING* FString12="Рок тусовка";
+STRING* FString13="Ночь 2";
+STRING* FString14="Казино";
+STRING* FString15="Ночь 3";
+STRING* FString16="Зависимость";
+STRING* FString17="Ночь 4";
+STRING* FString18="Obsession";
+STRING* FString19="Так началась новая жизнь...";
+STRING* FString20="Конец.";
+STRING* FString21="В своих снах я мог добится...";
+STRING* FString22="Справедливости... и ее...";
+STRING* FString23="Его же рот этого казино!";
+STRING* FString24="Ты опять пришел ко мне?";
 
 BMAP* bDialog = "dialog.dds";
+
+PANEL* panel_hud =
+{
+	pos_x = 10;
+	pos_y = 10;
+	digits(20,30, "Life: %.0f", "System#20b", 1, FPlayerLife); 
+	digits(20,50, "Health: %.0f", "System#20b", 1, FPlayerHealth); 
+	digits(20,70, "Score: %.0f", "System#20b", 1, FPlayerPickupCount); 
+	flags =  OUTLINE;
+}
+
+
+PANEL* panel_black =
+{
+	pos_x = 0; pos_y = 0;
+	size_x = 1920; size_y = 1080;
+	red = 0;
+	green = 0;
+	blue = 0;
+	
+	flags =  SHOW | LIGHT | TRANSLUCENT ;
+	
+}
 
 action AAnimSprite()
 {
@@ -59,6 +100,17 @@ PANEL* panel_dialog_boss1 =
 	flags =  OVERLAY;
 }
 
+PANEL* panel_dialog_boss2 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString23, "System#50b", 1, NULL); 
+	digits(50,125, FString24, "System#50b", 1, NULL); 
+	digits(50,200, FString3, "System#50b", 1, NULL);
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
 PANEL* panel_dialog_boss1_end =
 {
 	pos_x = 380;
@@ -70,6 +122,87 @@ PANEL* panel_dialog_boss1_end =
 	flags =  OVERLAY;
 }
 
+PANEL* panel_dialog_intro1 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString7, "System#50b", 1, NULL); 
+	digits(50,125, FString8, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_intro2 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString9, "System#50b", 1, NULL); 
+	digits(50,125, FString10, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_intro3 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString11, "System#50b", 1, NULL); 
+	digits(50,125, FString12, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_level2_1 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString21, "System#50b", 1, NULL); 
+	digits(50,125, FString22, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_level2_2 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString13, "System#50b", 1, NULL); 
+	digits(50,125, FString14, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+function FPlayerDeath()
+{
+	
+}
+function FCheckPlayer()
+{
+	set(player,TRANSLUCENT);
+			player.alpha = 0;
+	if (FPlayerHealth==0)
+	{
+		FPlayerHealth=4;
+		FPlayerLife = FPlayerLife-1;
+		if (FPlayerLife<1)
+		{
+			FPlayerDeath();
+		}
+	}
+	if (FPlayerHitTimer>0)
+	{	
+					
+		//	while (FPlayerHitTimer>=0)
+			{
+				FPlayerHitTimer -= 1 * time_step;
+				wait(1);		
+			}
+	//	reset(player,TRANSLUCENT);
+		}
+	
+
+	
+}
 function FHitPlayer()
 {
 if (FPlayerHitTimer<1)
@@ -142,6 +275,91 @@ action ABoss1SuperPower()
    }	
    ent_remove(me);
 }
+
+function FLoadLevel2()
+{
+	FCutScene=0;
+	FPlayerCanMove = 1;
+	media_stop(FMusic);
+	level_load("intro.wmb");
+camera.arc= 60;
+wait(-1);
+	panel_black.alpha = 100;
+		var i=1;
+	
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+	}
+	
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level2_1,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level2_1,SHOW);
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level2_2,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level2_2,SHOW);
+	wait(-1);
+	
+		panel_black.alpha = 0;
+	var i=50;
+	while (i>1)
+	{
+	while (panel_black.alpha <100)
+	{
+		panel_black.alpha += 8*time_step; 
+		if (i>1)
+		media_tune(FMusic,i,0,0);
+		i=i-0.2;
+		wait(2);
+	}
+	panel_black.alpha = 100;
+		
+	}
+	
+		level_load("lvl2.wmb");
+	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
+		camera.arc=20;
+		FMusic =	media_play("motley_crue-girls_girls_girls.mid",NULL,50);
+		
+			media_tune(FMusic,1,0,0);
+	panel_black.alpha = 100;
+		var i=1;
+		wait(-2);
+		FCheckPlayer();
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+		media_tune(FMusic,i,0,0);
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+		media_tune(FMusic,50,0,0);	
+	}
+	
+		set(panel_hud, SHOW);
+	
+			while (FCutScene==0)
+	{
+		FCheckPlayer();
+		wait(1);
+	}	
+	
+}
+
 
 action ABoss1()
 {
@@ -283,6 +501,7 @@ action ABoss1()
 	set(panel_dialog,SHOW);
 	set(panel_dialog_boss1_end,SHOW);
 	FPlayerCanMove = 0;
+	player.z=my.z;
 	while(key_enter==false){
 			LAnimPercent=LAnimPercent+1*time_step;
 			if (LAnimPercent>20){LAnimPercent=0;}
@@ -307,32 +526,213 @@ action ABoss1()
 		FCutScene=3;
 		wait(-1);
 		FCutScene=2;
-}
-
-
-
-PANEL* panel_hud =
-{
-	pos_x = 10;
-	pos_y = 10;
-	digits(20,30, "Life: %.0f", "System#20b", 1, FPlayerLife); 
-	digits(20,50, "Health: %.0f", "System#20b", 1, FPlayerHealth); 
-	digits(20,70, "Score: %.0f", "System#20b", 1, FPlayerPickupCount); 
-	flags = SHOW | OUTLINE;
-}
-
-
-PANEL* panel_black =
-{
-	pos_x = 0; pos_y = 0;
-	size_x = 1920; size_y = 1080;
-	red = 0;
-	green = 0;
-	blue = 0;
+		
+		
+			panel_black.alpha = 0;
+	var i=50;
+	while (i>1)
+	{
+	while (panel_black.alpha <100)
+	{
+		panel_black.alpha += 8*time_step; 
+		if (i>1)
+		media_tune(FMusic,i,0,0);
+		i=i-0.2;
+		wait(2);
+	}
+	panel_black.alpha = 100;
+		
+	}
 	
-	flags = LIGHT | SHOW | TRANSLUCENT ;
-	
+	FLoadLevel2();
 }
+
+action ABoss2()
+{
+	boss_coins =1000;
+	my.skill5=5;
+	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
+   vec_set(my.max_x,vector(20,20,150));
+   
+   	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
+   vec_set(my.max_x,vector(20,20,150));
+	
+ 	my.min_z *= 0.5;
+ 	var speed_down = 0;   // downward speed by gravity
+   var anim_percent = 0; // animation percentage
+   var lplayer_direction=0;
+   VECTOR vFeet;
+   vec_for_min(vFeet,me); // vFeet.z = distance from player origin to lowest vertex
+   var lattacktimer;
+   var lattackpercent;
+   
+   var LAnimPercent=0;
+   if (my.x>player.x){my.pan=90;}
+   if (my.x<player.x){my.pan=270;}	
+   random_seed(0);
+   while (vec_dist(my.x,player.x)>500) 			//ждем игрока
+	{
+		my.frame = 15;
+		wait(1);
+	}															// запускаем диалог
+	
+		FPlayerCanMove = 0;	
+		set(panel_dialog,SHOW);
+		set(panel_dialog_boss2,SHOW);
+		while(key_enter==false){
+			LAnimPercent=LAnimPercent+1*time_step;
+			if (LAnimPercent>20){LAnimPercent=0;}
+			my.frame = 15;
+			if (LAnimPercent>10){my.frame = 16;}
+			wait(1);
+		}	
+		reset(panel_dialog,SHOW);	
+		reset(panel_dialog_boss2,SHOW);	
+		FPlayerCanMove = 1;
+		
+															// начало битвы
+		
+	while (my.skill5>0)
+	{
+		if (my.x>player.x){my.pan=90;}
+      if (my.x<player.x){my.pan=270;}
+      var dist_down; 
+      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | USE_BOX) > 0)
+         dist_down = my.z + vFeet.z - target.z; // get distance between player's feet and the ground
+      else
+         dist_down = 0;
+		
+	   if (dist_down > 0)  // above floor, fall down with increasing speed
+         dist_down = clamp(dist_down,0,accelerate(speed_down,5,0.1));
+      else                // on or below floor, set downward speed to zero
+         speed_down = 0;
+      lplayer_direction =0; 
+         
+      if (random (5) > 4.98)	// пуляем супер способность
+      	{
+      		my.frame = 10;
+      		wait(-0.2);	
+      		my.frame = 11;
+      		wait(-0.2);
+      		my.frame = 12;
+      		ent_create("wave.dds",my.x,ABoss1SuperPower);
+      		wait(-0.1);
+      		my.frame = 1;
+      		wait(-0.1);
+      		my.frame = 2;
+      	}
+      
+      if (vec_dist(my.x,player.x) >my.skill3) // пока игрок далеко- идем к нему
+      {
+      	lattacktimer = my.skill1;
+      	//	if (my.x>player.x){lplayer_direction=-1;}
+      	//	if (my.x<player.x){
+      			lplayer_direction=1;
+      			//}
+      			
+      					if (my.x>player.x){my.pan=90;}
+      		if (my.x<player.x){my.pan=270;}		
+      		
+      		LAnimPercent = LAnimPercent+my.skill4*0.1*time_step;
+      		if (LAnimPercent>4){LAnimPercent=1;}
+      		
+      		my.frame=LAnimPercent+2;		
+      }
+      else
+      {
+      	if (lattacktimer>0)
+      	{
+      		lattacktimer=lattacktimer-1;
+      		lattackpercent=0;
+      		my.frame = 1;
+      	}
+      	else
+      	{
+      		my.frame = 7+lattackpercent/30;
+      		if (FPlayerAttack>50)
+      		{
+      			my.frame = 13;	
+      			my.skill5=my.skill5-0.5; //получение урона
+      			wait(-1);
+      		}
+      		lattackpercent=lattackpercent+10*time_step;
+      		if (lattackpercent>90)
+      		{
+      			lattacktimer= my.skill1;
+      			lattackpercent=0;      			
+      		}
+      		if (lattackpercent>50)
+      		{
+      			if (vec_dist(my.x,player.x)  <my.skill3)
+      			{
+      				FHitPlayer();
+      				boss_coins = boss_coins-1;
+      				//lattacktimer = my.skill1;
+      				
+      			}
+      		}
+      	} 
+      	}
+      	var dist_ahead = (lplayer_direction)*time_step;
+      
+      dist_ahead = sign(dist_ahead)*(abs(dist_ahead) + 0.5*dist_down); // adapt the speed on slopes	
+         
+       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | GLIDE); // move the player
+
+	wait(1);	
+	}	
+	set(panel_dialog,SHOW);
+	set(panel_dialog_boss1_end,SHOW);
+	FPlayerCanMove = 0;
+	player.z=my.z;
+	while(key_enter==false){
+			LAnimPercent=LAnimPercent+1*time_step;
+			if (LAnimPercent>20){LAnimPercent=0;}
+			my.frame = 1;
+			if (LAnimPercent>10){my.frame = 2;}
+			wait(1);
+		}
+		reset(panel_dialog,SHOW);
+	reset(panel_dialog_boss1_end,SHOW);
+		my.frame = 14;	
+	FPlayerCanMove = 0;
+	FPlayerPickupCount = FPlayerPickupCount+boss_coins;
+	while(player.x<3955)
+	{
+		FCutScene=1;
+		player.x=player.x+8*time_step;
+		wait(1);
+	}
+	player.z=player.z+40;
+	FCutScene=2;
+	wait(-1);
+		FCutScene=3;
+		wait(-1);
+		FCutScene=2;
+		
+		
+			panel_black.alpha = 0;
+	var i=50;
+	while (i>1)
+	{
+	while (panel_black.alpha <100)
+	{
+		panel_black.alpha += 8*time_step; 
+		if (i>1)
+		media_tune(FMusic,i,0,0);
+		i=i-0.2;
+		wait(2);
+	}
+	panel_black.alpha = 100;
+		
+	}
+	
+//	FLoadLevel2();
+}
+
+
+
+
 
 action ANPC()
 {
@@ -527,7 +927,7 @@ action APlayer()
 	while (FPlayerLife>0)
 	{
 		my.x=player.x;
-		my.y=player.y;
+		my.y=player.y-30;
 		my.z=player.z;
 		
 		if (key_a){my.pan=90;lacc=1;}
@@ -578,52 +978,107 @@ action APlayer()
 	my.frame=12;
 }
 
-function FPlayerDeath()
-{
-	
-}
 
-function FCheckPlayer()
-{
-	set(player,TRANSLUCENT);
-			player.alpha = 0;
-	if (FPlayerHealth==0)
-	{
-		FPlayerHealth=4;
-		FPlayerLife = FPlayerLife-1;
-		if (FPlayerLife<1)
-		{
-			FPlayerDeath();
-		}
-	}
-	if (FPlayerHitTimer>0)
-	{	
-					
-		//	while (FPlayerHitTimer>=0)
-			{
-				FPlayerHitTimer -= 1 * time_step;
-				wait(1);		
-			}
-	//	reset(player,TRANSLUCENT);
-		}
-	
-
-	
-}
 
 function FLoadLevel1()
 {
 		level_load("lvl1.wmb");
 	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
-		camera.arc= 80;
-		FMusic =	media_loop("megadeth-hangar_18.mid",NULL,50);	
+		camera.arc=20;
+		FMusic =	media_play("megadeth-hangar_18.mid",NULL,50);
+		
+			media_tune(FMusic,1,0,0);
+	panel_black.alpha = 100;
+		var i=1;
+		wait(-2);
+		FCheckPlayer();
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+		media_tune(FMusic,i,0,0);
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+		media_tune(FMusic,50,0,0);	
+	}
+	
+		set(panel_hud, SHOW);
+	
+			while (FCutScene==0)
+	{
+		FCheckPlayer();
+		wait(1);
+	}	
 }
+
+function FLoadInto()
+{
+	set(panel_black, SHOW);
+level_load("intro.wmb");
+camera.arc= 60;
+wait(-1);
+	panel_black.alpha = 100;
+		var i=1;
+	
+	{
+	while (panel_black.alpha >1)
+	{
+		panel_black.alpha -= 8*time_step; 
+		if (i<=50)
+	   i=i+0.2;
+		wait(2);
+	}
+	panel_black.alpha = 0;
+	}
+	
+	set(panel_dialog,SHOW);
+	set(panel_dialog_intro1,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_intro1,SHOW);
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_intro2,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_intro2,SHOW);
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_intro3,SHOW);
+	wait(-4);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_intro3,SHOW);
+	wait(-1);
+	
+		panel_black.alpha = 0;
+	var i=50;
+	while (i>1)
+	{
+	while (panel_black.alpha <100)
+	{
+		panel_black.alpha += 8*time_step; 
+		if (i>1)
+		media_tune(FMusic,i,0,0);
+		i=i-0.2;
+		wait(2);
+	}
+	panel_black.alpha = 100;
+		
+	}
+	
+	FLoadLevel1();
+}
+
+
 
 function FContinueGame()
 {
 	if (GameProgress==0)
 	{
-		FLoadLevel1();
+		FLoadInto();
 	}
 }
 
@@ -642,15 +1097,11 @@ function main()
 //	if (game_load("Save",0)<=0){game_save("Save",0,SV_VARS);}
 	
 	FContinueGame();
-	camera.arc=20;
+//FLoadLevel2();	
 	wait(-1);	
 	sky_color.red = 0;
 sky_color.green = 0;
 sky_color.blue = 0; // bright blue sky   
 	
-	while (1)
-	{
-		FCheckPlayer();
-		wait(1);
-	}	
+	
 }
