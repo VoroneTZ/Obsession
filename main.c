@@ -11,6 +11,7 @@ var FPlayerCanMove=1;
 var FBossHealth=0;
 var fcrouch=false;
 var FCutScene=0;
+var FBarGirl=0;
 
 	var lcanjump=true;
 
@@ -18,8 +19,8 @@ var GameProgress =0;
 
 var boss_coins;
 
-STRING* FString1="Как ты посмел явится в мой бар?";
-STRING* FString2="Сейчас ты у меня получишь!";
+STRING* FString1="Здарова отец, вижу ты зубы не";
+STRING* FString2="бережешь, раз пришел сюда.";
 STRING* FString3="*Нажмите Enter для продолжения";
 STRING* FString4="Это еще не конец, тебе просто повезло!";
 STRING* FString5="Радуйся своей 'победе'...";
@@ -41,8 +42,8 @@ STRING* FString21="В своих снах я мог добится...";
 STRING* FString22="Справедливости... и ее...";
 STRING* FString23="Его же рот этого казино!";
 STRING* FString24="Ты опять пришел ко мне?";
-STRING* FString25="Давай, сделай то, ради чего пришел";
-STRING* FString26="Это все равно ничего не изменит";
+STRING* FString25="Велком ту зе джангл";
+STRING* FString26="бейби!";
 STRING* FString27="Без препаратов уснуть всё тяжелее";
 STRING* FString28="Пытаюсь убежать от реальности...";
 STRING* FString29="Что это?!";
@@ -53,8 +54,23 @@ STRING* FString33="Мы больше не вместе...";
 STRING* FString34="Мяу...";
 STRING* FString35="А ведь ни кто не нужен,";
 STRING* FString36="когда есть такой хороший котик.";
+STRING* FString37="Колода в другом порядке";
+STRING* FString38="разложена.. запечатанная..";
+STRING* FString39="Конец близок";
+STRING* FString40="Надеюсь ты все поймешь";
 
 BMAP* bDialog = "dialog.dds";
+
+SOUND* miss_snd = "miss.wav"; 
+SOUND* fire0_snd = "fire-0.wav"; 
+SOUND* lift_snd = "machan.wav"; 
+SOUND* hit1_snd = "hit1.wav"; 
+SOUND* hit2_snd = "hit2.wav"; 
+SOUND* hit_snd = "hit.wav"; 
+SOUND* fall_snd = "migstart.wav"; 
+SOUND* dostal3_snd = "dostal3.wav"; 
+SOUND* explo1_snd = "explo1.wav"; 
+
 
 PANEL* panel_hud =
 {
@@ -63,6 +79,14 @@ PANEL* panel_hud =
 	digits(20,30, "Life: %.0f", "System#20b", 1, FPlayerLife); 
 	digits(20,50, "Health: %.0f", "System#20b", 1, FPlayerHealth); 
 	digits(20,70, "Score: %.0f", "System#20b", 1, FPlayerPickupCount); 
+	flags =  OUTLINE;
+}
+
+PANEL* panel_boss =
+{
+	pos_x = 100;
+	pos_y = 10;
+	digits(20,70, "BOSS HEALTH: %.0f", "System#30b", 1, FBossHealth); 
 	flags =  OUTLINE;
 }
 
@@ -77,6 +101,18 @@ PANEL* panel_black =
 	
 	flags =  SHOW | LIGHT | TRANSLUCENT ;
 	
+}
+
+action ABarGirl()
+{
+	while(1)
+	{
+		
+	
+			my.frame = FBarGirl;
+			
+		wait(1);
+	}
 }
 
 action AAnimSprite()
@@ -123,12 +159,34 @@ PANEL* panel_dialog_boss2 =
 	flags =  OVERLAY;
 }
 
+PANEL* panel_dialog_boss2_end =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString37, "System#50b", 1, NULL); 
+	digits(50,125, FString38, "System#50b", 1, NULL); 
+	digits(50,200, FString3, "System#50b", 1, NULL);
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
 PANEL* panel_dialog_boss3 =
 {
 	pos_x = 380;
 	pos_y = 70;
 	digits(50,50, FString25, "System#50b", 1, NULL); 
 	digits(50,125, FString26, "System#50b", 1, NULL); 
+	digits(50,200, FString3, "System#50b", 1, NULL);
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_boss3_1 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString39, "System#50b", 1, NULL); 
+	digits(50,125, FString40, "System#50b", 1, NULL); 
 	digits(50,200, FString3, "System#50b", 1, NULL);
 	layer = 11; 
 	flags =  OVERLAY;
@@ -182,6 +240,16 @@ PANEL* panel_dialog_intro3 =
 	pos_y = 70;
 	digits(50,50, FString11, "System#50b", 1, NULL); 
 	digits(50,125, FString12, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_dialog_intro4 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString15, "System#50b", 1, NULL); 
+	digits(50,125, FString18, "System#50b", 1, NULL); 
 	layer = 11; 
 	flags =  OVERLAY;
 }
@@ -255,6 +323,16 @@ PANEL* panel_dialog_level4_3 =
 	flags =  OVERLAY;
 }
 
+PANEL* panel_dialog_level4_5 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString19, "System#50b", 1, NULL); 
+	digits(50,125, FString20, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
 
 
 function FPlayerDeath()
@@ -292,6 +370,7 @@ function FHitPlayer()
 {
 if (FPlayerHitTimer<1)
 	{
+		snd_play(hit_snd,100,0);
 		FPlayerHitTimer= 10;
 		FPlayerHealth -= 1;		
 		if (FPlayerHealth<1)
@@ -321,6 +400,7 @@ action platform_bar1()
 		}
 		wait(-1);
 		FPlayerCanMove=0;
+		snd_play(lift_snd,100,0);
 		var i;
 		for (i=0; i<500; i++) 
 		{
@@ -351,6 +431,7 @@ action platform_city1()
 		}
 		wait(-1);
 		FPlayerCanMove=0;
+		snd_play(lift_snd,100,0);
 		var i;
 		for (i=0; i<1500; i++) 
 		{
@@ -374,6 +455,7 @@ action platform_city1()
 action AGhost()
 {
 		set(my,PASSABLE);
+		snd_play(fire0_snd,100,0);
 	my.z=my.z-80;
 	if (my.x>player.x){my.pan=90;}
    if (my.x<player.x){my.pan=270;}	
@@ -389,11 +471,85 @@ action AGhost()
       			}
    	wait(1);
    }	
+   snd_play(explo1_snd,100,0);
    ent_remove(me);
+}
+
+action ADarkPlayer()
+{
+	my.x=player.x-800;
+	vec_scale(my.scale_x,1.9);
+//	set(my, UNLIT);
+	var i;
+	var anim;
+	for (i=0;i<600;i++)
+	{
+		my.x=my.x+1;
+		anim=anim+0.2*time_step;
+		if (anim>4)	{anim=1;}
+		my.frame=anim+3;
+		wait(1);
+	}
+	snd_play(dostal3_snd,100,0);
+	my.frame=18;
+	wait(-2);
+	my.frame=13;
+	wait(-1);
+	set(panel_black,SHOW);
+	panel_black.alpha = 100;
+	wait(-0.2);
+	my.x=my.x+20;
+	my.frame=14;
+	panel_black.alpha = 0;
+	wait(-0.2);
+	panel_black.alpha = 100;
+	wait(-0.2);
+	my.x=my.x+20;
+	my.frame=7;
+	panel_black.alpha = 0;
+	wait(-0.2);
+		panel_black.alpha = 100;
+	wait(-0.2);
+	my.x=my.x+20;
+	my.frame=8;
+	panel_black.alpha = 0;
+	wait(-0.2);
+		panel_black.alpha = 100;
+	wait(-0.2);
+	my.x=my.x+9;
+	my.frame=14;
+	panel_black.alpha = 0;
+	wait(-0.2);
+	panel_black.alpha = 100;
+	wait(-2);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level4_2,SHOW);
+	wait(-2);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level4_2,SHOW);	
+	panel_black.alpha = 0;
+	player.x=-18591;
+	player.y=37;
+	player.z=748;
+	FCutScene=7;
+	wait(-2);
+	FCutScene=2;
+	player.pan=90;
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level4_3,SHOW);
+	wait(-3);
+	reset(panel_dialog,SHOW);
+	reset(panel_dialog_level4_3,SHOW);
+	wait(-1);
+	set(panel_dialog,SHOW);
+	set(panel_dialog_level4_5,SHOW);
+	
 }
 
 action ALastBoss()
 {
+	var i;
 	while(vec_dist(my.x,player.x)>500)
 	{
 		wait(1);	
@@ -405,13 +561,32 @@ action ALastBoss()
 	wait(-2);
 	reset(panel_dialog,SHOW);
 	reset(panel_dialog_level4_1,SHOW);
+//	my.pan=my.pan+180;
+	FCutScene=5;
+	wait(-1);
+	FCutScene=6;
 	for (i=0; i<500; i++)
 	{
 		my.x=my.x-1;
 		wait(1);
 	}
-	my.z=1000;
-	
+	FCutScene=5;
+	wait(-2);
+	FCutScene=0;
+	my.z=2000;
+		FPlayerCanMove=0;
+		wait(-1);
+	for (i=0;i<2; i++)
+	{
+		ent_create("ghost.dds",vector(player.x - 300, player.y, player.z),AGhost);	
+		wait(-2);
+		ent_create("ghost.dds",vector(player.x + 300, player.y, player.z),AGhost);	
+		wait(-2);
+	}	
+	wait(-2);
+	FPlayerCanMove=0;
+	wait(1);
+	ent_create("player2+20.dds",player.x,ADarkPlayer);	
 }
 
 action ABoss1SuperPower()
@@ -458,6 +633,7 @@ action ABoss2SuperPower()
 
 function FLoadLevel2()
 {
+	FBarGirl=1;
 	FCutScene=0;
 	FPlayerCanMove = 1;
 	media_stop(FMusic);
@@ -655,6 +831,11 @@ function FLoadLevel4()
 	}
 	
 		set(panel_hud, SHOW);
+		set(panel_dialog,SHOW);
+		set(panel_dialog_intro4,SHOW);
+		wait(-2);
+		reset(panel_dialog,SHOW);
+		reset(panel_dialog_intro4,SHOW);
 	
 			while (FCutScene==0)
 	{
@@ -672,10 +853,10 @@ action ABoss1()
 	my.skill5=5;
 	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
    vec_set(my.max_x,vector(20,20,150));
-   
+   FBossHealth =0;
    	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
    vec_set(my.max_x,vector(20,20,150));
-	
+	FBossHealth=0;
  	my.min_z *= 0.5;
  	var speed_down = 0;   // downward speed by gravity
    var anim_percent = 0; // animation percentage
@@ -697,7 +878,7 @@ action ABoss1()
 		if (LAnimPercent>10){my.frame = 2;}
 		wait(1);
 	}															// запускаем диалог
-	
+		 
 		FPlayerCanMove = 0;	
 		set(panel_dialog,SHOW);
 		set(panel_dialog_boss1,SHOW);
@@ -716,10 +897,12 @@ action ABoss1()
 		
 	while (my.skill5>0)
 	{
+		FBossHealth =my.skill5*100;
+		set(panel_boss,SHOW);
 		if (my.x>player.x){my.pan=90;}
       if (my.x<player.x){my.pan=270;}
       var dist_down; 
-      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | USE_BOX) > 0)
+      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | IGNORE_SPRITES | USE_BOX) > 0)
          dist_down = my.z + vFeet.z - target.z; // get distance between player's feet and the ground
       else
          dist_down = 0;
@@ -730,9 +913,10 @@ action ABoss1()
          speed_down = 0;
       lplayer_direction =0; 
          
-      if (random (5) > 4.99)	// пуляем супер способность
+      if (random (5) > 4.995)	// пуляем супер способность
       	{
       		my.frame = 10;
+      			snd_play(fire0_snd,100,0);
       		wait(-0.2);	
       		my.frame = 11;
       		wait(-0.2);
@@ -775,6 +959,7 @@ action ABoss1()
       		{
       			my.frame = 13;	
       			my.skill5=my.skill5-0.5; //получение урона
+      			snd_play(hit_snd,100,0);
       			wait(-1);
       		}
       		lattackpercent=lattackpercent+10*time_step;
@@ -799,10 +984,11 @@ action ABoss1()
       
       dist_ahead = sign(dist_ahead)*(abs(dist_ahead) + 0.5*dist_down); // adapt the speed on slopes	
          
-       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | GLIDE); // move the player
+       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | IGNORE_SPRITES | GLIDE); // move the player
 
 	wait(1);	
 	}	
+	reset(panel_boss,SHOW);
 	set(panel_dialog,SHOW);
 	set(panel_dialog_boss1_end,SHOW);
 	FPlayerCanMove = 0;
@@ -829,8 +1015,11 @@ action ABoss1()
 	FCutScene=2;
 	wait(-1);
 		FCutScene=3;
+		FBarGirl=2;
 		wait(-1);
 		FCutScene=2;
+		wait(-1);
+		FBarGirl=1;
 		
 		
 			panel_black.alpha = 0;
@@ -899,10 +1088,12 @@ action ABoss2()
 		
 	while (my.skill5>0)
 	{
+		set(panel_boss,SHOW);
+		FBossHealth =my.skill5*100;
 		if (my.x>player.x){my.pan=90;}
       if (my.x<player.x){my.pan=270;}
       var dist_down; 
-      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | USE_BOX) > 0)
+      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | IGNORE_SPRITES | USE_BOX) > 0)
          dist_down = my.z + vFeet.z - target.z; // get distance between player's feet and the ground
       else
          dist_down = 0;
@@ -913,9 +1104,10 @@ action ABoss2()
          speed_down = 0;
       lplayer_direction =0; 
          
-      if (random (5) > 4.98)	// пуляем супер способность
+      if (random (5) > 4.99)	// пуляем супер способность
       	{
       		my.frame = 10;
+      			snd_play(fire0_snd,100,0);
       		wait(-0.2);	
       		my.frame = 11;
       		wait(-0.2);
@@ -958,6 +1150,7 @@ action ABoss2()
       		{
       			my.frame = 13;	
       			my.skill5=my.skill5-0.5; //получение урона
+      			snd_play(hit_snd,100,0);
       			wait(-1);
       		}
       		lattackpercent=lattackpercent+10*time_step;
@@ -982,12 +1175,13 @@ action ABoss2()
       
       dist_ahead = sign(dist_ahead)*(abs(dist_ahead) + 0.5*dist_down); // adapt the speed on slopes	
          
-       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | GLIDE); // move the player
+       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | IGNORE_SPRITES | GLIDE); // move the player
 
 	wait(1);	
-	}	
+	}
+	reset(panel_boss,SHOW);	
 	set(panel_dialog,SHOW);
-	set(panel_dialog_boss1_end,SHOW);
+	set(panel_dialog_boss2_end,SHOW);
 	FPlayerCanMove = 0;
 	player.z=my.z;
 	while(key_enter==false){
@@ -998,7 +1192,7 @@ action ABoss2()
 			wait(1);
 		}
 		reset(panel_dialog,SHOW);
-	reset(panel_dialog_boss1_end,SHOW);
+	reset(panel_dialog_boss2_end,SHOW);
 		my.frame = 14;	
 	FPlayerCanMove = 0;
 	FPlayerPickupCount = FPlayerPickupCount+boss_coins;
@@ -1012,8 +1206,10 @@ action ABoss2()
 	FCutScene=2;
 	wait(-1);
 		FCutScene=3;
+		FBarGirl=2;
 		wait(-1);
 		FCutScene=2;
+		FBarGirl=1;
 		
 		
 			panel_black.alpha = 0;
@@ -1039,6 +1235,7 @@ action ABoss3()
 {
 	boss_coins =3000;
 	my.skill5=10;
+	FBossHealth=0;
 	vec_set(my.min_x,vector(-20,-20,-240)); // set bounding box to individual values
    vec_set(my.max_x,vector(20,20,150));
    
@@ -1082,10 +1279,12 @@ action ABoss3()
 		
 	while (my.skill5>0)
 	{
+		set(panel_boss,SHOW);
+		FBossHealth =my.skill5*100;
 		if (my.x>player.x){my.pan=90;}
       if (my.x<player.x){my.pan=270;}
       var dist_down; 
-      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | USE_BOX) > 0)
+      if (c_trace(my.x,vector(my.x,my.y,my.z-5000),IGNORE_ME | IGNORE_PASSABLE | IGNORE_SPRITES | USE_BOX) > 0)
          dist_down = my.z + vFeet.z - target.z; // get distance between player's feet and the ground
       else
          dist_down = 0;
@@ -1096,9 +1295,10 @@ action ABoss3()
          speed_down = 0;
       lplayer_direction =0; 
          
-      if (random (5) > 4.99)	// пуляем супер способность
+      if (random (5) > 4.995)	// пуляем супер способность
       	{
       		my.frame = 10;
+      		snd_play(hit1_snd,100,0);
       		wait(-0.2);	
       		my.frame = 11;
       		wait(-0.2);
@@ -1110,9 +1310,10 @@ action ABoss3()
       		my.frame = 2;
       	}
       	
-      	if (random (5) < 0.01)	// пуляем супер способность
+      	if (random (5) < 0.005)	// пуляем супер способность
       	{
       		my.frame = 13;
+      		snd_play(hit2_snd,100,0);
       		wait(-0.2);	
       		my.frame = 14;
       		wait(-0.2);
@@ -1155,6 +1356,7 @@ action ABoss3()
       		{
       			my.frame = 16;	
       			my.skill5=my.skill5-0.5; //получение урона
+      			snd_play(hit_snd,100,0);
       			wait(-1);
       		}
       		lattackpercent=lattackpercent+10*time_step;
@@ -1179,12 +1381,13 @@ action ABoss3()
       
       dist_ahead = sign(dist_ahead)*(abs(dist_ahead) + 0.5*dist_down); // adapt the speed on slopes	
          
-       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | GLIDE); // move the player
+       c_move(me,vector(0,(my.skill4/8)*dist_ahead,0),vector(0,0,-dist_down),IGNORE_PASSABLE | IGNORE_SPRITES | GLIDE); // move the player
 
 	wait(1);	
-	}	
+	}
+	reset(panel_boss,SHOW);	
 	set(panel_dialog,SHOW);
-	set(panel_dialog_boss1_end,SHOW);
+	set(panel_dialog_boss3_1,SHOW);
 	FPlayerCanMove = 0;
 	player.z=my.z;
 	while(key_enter==false){
@@ -1195,7 +1398,7 @@ action ABoss3()
 			wait(1);
 		}
 		reset(panel_dialog,SHOW);
-	reset(panel_dialog_boss1_end,SHOW);
+	reset(panel_dialog_boss3_1,SHOW);
 		my.frame = 17;	
 	FPlayerCanMove = 0;
 	FPlayerPickupCount = FPlayerPickupCount+boss_coins;
@@ -1215,6 +1418,7 @@ action ABoss3()
 	reset(panel_dialog_boss3_end,SHOW);	
 	wait(-1);	
 	player.x=player.x+50;
+	snd_play(fall_snd,100,0);
 	FCutScene=4;	
 			panel_black.alpha = 0;
 	var i=50;
@@ -1302,7 +1506,7 @@ action ANPC()
       	else
       	{
       		my.frame = 6+lattackpercent/30;
-      		if (FPlayerAttack>50){my.skill5=0;}
+      		if (FPlayerAttack>50){my.skill5=0;snd_play(hit_snd,100,0);}
       		lattackpercent=lattackpercent+10*time_step;
       		if (lattackpercent>90)
       		{
@@ -1371,7 +1575,7 @@ action ARealPlayer()
       else                // on or below floor, set downward speed to zero
          speed_down = 0;
          
-      if (FPlayerAttack==0 && key_space){FPlayerAttack=1;}
+      if (FPlayerAttack==0 && key_space){FPlayerAttack=1; snd_play(miss_snd,100,0);}
       if (FPlayerAttack>0){FPlayerAttack=FPlayerAttack+5*time_step;}
       if (FPlayerAttack>100){FPlayerAttack=0;}
          
@@ -1480,6 +1684,9 @@ action APlayer()
 		if (FCutScene==2){my.frame=16;}
 			if (FCutScene==3){my.frame=17;}
 			if (FCutScene==4){my.frame=12;}
+			if (FCutScene==5){my.frame=18;my.pan=90;}
+			if (FCutScene==6){my.frame=19;my.pan=90;}
+			if (FCutScene==7){my.frame=20;my.pan=90;}
       wait(1);
 	}
 	my.frame=12;
@@ -1489,6 +1696,7 @@ action APlayer()
 
 function FLoadLevel1()
 {
+	FBarGirl=1;
 		level_load("lvl1.wmb");
 	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
 		camera.arc=20;
@@ -1603,8 +1811,8 @@ function main()
 	
 //	if (game_load("Save",0)<=0){game_save("Save",0,SV_VARS);}
 	
-//	FContinueGame();
-FLoadLevel4();	
+	FContinueGame();
+//FLoadLevel3();	
 	wait(-1);	
 	sky_color.red = 0;
 sky_color.green = 0;
