@@ -2,7 +2,7 @@
 #include <default.c>
 
 var FMusic;
-var FPlayerLife = 30;
+var FPlayerLife = 5;
 var FPlayerHealth = 4;
 var FPlayerHitTimer =0;
 var FPlayerPickupCount =0;
@@ -50,7 +50,7 @@ STRING* FString29="Что это?!";
 STRING* FString30="Неужели...";
 STRING* FString31="Это я...";
 STRING* FString32="Ты должен понять...";
-STRING* FString33="Мы больше не вместе...";
+STRING* FString33="Мы с тобой больше не вместе...";
 STRING* FString34="Мяу...";
 STRING* FString35="А ведь ни кто не нужен,";
 STRING* FString36="когда есть такой хороший котик.";
@@ -58,6 +58,18 @@ STRING* FString37="Колода в другом порядке";
 STRING* FString38="разложена.. запечатанная..";
 STRING* FString39="Конец близок";
 STRING* FString40="Надеюсь ты все поймешь";
+
+STRING* FString41="Создано для theBatya Game Jam 2021";
+STRING* FString42="Идея @VoroneTZ";
+STRING* FString43="Оператор @VoroneTZ";
+STRING* FString44="Художник @VoroneTZ";
+STRING* FString45="Программист @VoroneTZ";
+STRING* FString46="Левел дизаин @VoroneTZ";
+STRING* FString47="Актеры: @VoroneTZ";
+STRING* FString48="Актеры: @dragonborn_earl";
+STRING* FString49="Актеры: @cherry_verner";
+STRING* FString50="Отдельное спасибо друзьям за поддержку";
+STRING* FString51="2021 VTZ Games";
 
 BMAP* bDialog = "dialog.dds";
 
@@ -313,6 +325,94 @@ PANEL* panel_dialog_level4_2 =
 	flags =  OVERLAY;
 }
 
+PANEL* panel_title1 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString41, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title2 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString42, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title3 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString43, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title4 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString44, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+PANEL* panel_title5 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString45, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+PANEL* panel_title6 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString46, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title7 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString47, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title8 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString48, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title9 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString49, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
+PANEL* panel_title10 =
+{
+	pos_x = 380;
+	pos_y = 70;
+	digits(50,50, FString51, "System#50b", 1, NULL); 
+	layer = 11; 
+	flags =  OVERLAY;
+}
+
 PANEL* panel_dialog_level4_3 =
 {
 	pos_x = 380;
@@ -542,32 +642,94 @@ action ADarkPlayer()
 	reset(panel_dialog,SHOW);
 	reset(panel_dialog_level4_3,SHOW);
 	wait(-1);
+	media_play("black_sabbath-paranoid.mid",NULL,50);
 	set(panel_dialog,SHOW);
 	set(panel_dialog_level4_5,SHOW);
-	
+	wait(-1);
+	reset(panel_dialog_level4_5,SHOW);
+	panel_black.alpha = 100;
+	set(panel_title1,SHOW);
+	wait(-2);
+	reset(panel_title1,SHOW);
+		set(panel_title2,SHOW);
+	wait(-2);
+	reset(panel_title2,SHOW);
+		set(panel_title3,SHOW);
+	wait(-2);
+	reset(panel_title3,SHOW);
+		set(panel_title4,SHOW);
+	wait(-2);
+	reset(panel_title4,SHOW);
+		set(panel_title5,SHOW);
+	wait(-2);
+	reset(panel_title5,SHOW);
+		set(panel_title6,SHOW);
+	wait(-2);
+	reset(panel_title6,SHOW);
+		set(panel_title7,SHOW);
+	wait(-2);
+	reset(panel_title7,SHOW);
+		set(panel_title8,SHOW);
+	wait(-2);
+	reset(panel_title8,SHOW);
+		set(panel_title9,SHOW);
+	wait(-2);
+	reset(panel_title9,SHOW);
+		set(panel_title10,SHOW);
+	wait(-2);
+	reset(panel_title10,SHOW);
+}
+
+action ALastL()
+{
+//	set(my, UNLIT);
+vec_scale(my.scale_x,1.9);
 }
 
 action ALastBoss()
 {
+	my.frame=5;
+	my.pan=-90;
 	var i;
+	var anim;
 	while(vec_dist(my.x,player.x)>500)
 	{
 		wait(1);	
 	}
+
 	FPlayerCanMove=0;
+	my.frame=6;
 	wait(-1);
+	my.frame=5;
 	set(panel_dialog,SHOW);
 	set(panel_dialog_level4_1,SHOW);
-	wait(-2);
+	wait(-1);
+	my.frame=6;
+	wait(-1);
+	my.frame=5;
 	reset(panel_dialog,SHOW);
 	reset(panel_dialog_level4_1,SHOW);
+	ENTITY* sereja;
+	sereja=ent_create("lastboss+6.dds",vector(my.x - 70, my.y+10, my.z),ALastL);	
+	sereja.frame=5;
 //	my.pan=my.pan+180;
 	FCutScene=5;
 	wait(-1);
+	sereja.frame=6;
+	wait(-1);
+	sereja.frame=5;
+	my.frame=6;
 	FCutScene=6;
-	for (i=0; i<500; i++)
+	my.pan=90;
+	sereja.pan=90;
+	for (i=0; i<1000; i++)
 	{
-		my.x=my.x-1;
+		my.x=my.x-0.5;
+		sereja.x=my.x+5;
+		anim=anim+0.2*time_step;
+		if (anim>4)	{anim=1;}
+		my.frame=anim;
+		sereja.frame=anim;
 		wait(1);
 	}
 	FCutScene=5;
@@ -586,7 +748,8 @@ action ALastBoss()
 	wait(-2);
 	FPlayerCanMove=0;
 	wait(1);
-	ent_create("player2+20.dds",player.x,ADarkPlayer);	
+	ent_create("player2+20.dds",player.x,ADarkPlayer);
+		media_stop(FMusic);	
 }
 
 action ABoss1SuperPower()
@@ -633,6 +796,7 @@ action ABoss2SuperPower()
 
 function FLoadLevel2()
 {
+	GameProgress=2;
 	FBarGirl=1;
 	FCutScene=0;
 	FPlayerCanMove = 1;
@@ -718,6 +882,7 @@ wait(-1);
 
 function FLoadLevel3()
 {
+	GameProgress=3;
 	FCutScene=0;
 	FPlayerCanMove = 1;
 	media_stop(FMusic);
@@ -802,6 +967,7 @@ wait(-1);
 
 function FLoadLevel4()
 {
+	GameProgress=4;
 	FCutScene=0;
 	FPlayerCanMove = 1;
 	media_stop(FMusic);
@@ -810,7 +976,7 @@ function FLoadLevel4()
 		level_load("lvl4.wmb");
 	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
 		camera.arc=20;
-	//	FMusic =	media_play("guns_n_roses-welcome_to_the_jungle.mid",NULL,50);
+		FMusic =	media_play("01917.mp3",NULL,50);
 		
 		//	media_tune(FMusic,1,0,0);
 	panel_black.alpha = 100;
@@ -1690,6 +1856,9 @@ action APlayer()
       wait(1);
 	}
 	my.frame=12;
+	wait(-2);
+	
+	
 }
 
 
@@ -1697,6 +1866,10 @@ action APlayer()
 function FLoadLevel1()
 {
 	FBarGirl=1;
+	GameProgress=1;
+	FCutScene=0;
+	FPlayerCanMove = 1;
+	media_stop(FMusic);
 		level_load("lvl1.wmb");
 	//	ent_sky = ent_createlayer("spacecube1+6.bmp", SKY | CUBE, 1);  
 		camera.arc=20;
@@ -1795,6 +1968,22 @@ function FContinueGame()
 	{
 		FLoadInto();
 	}
+	if (GameProgress==1)
+	{
+		FLoadLevel1();
+	}
+		if (GameProgress==2)
+	{
+		FLoadLevel2();
+	}
+		if (GameProgress==3)
+	{
+		FLoadLevel3();
+	}
+		if (GameProgress==4)
+	{
+		FLoadLevel4();
+	}
 }
 
 
@@ -1811,8 +2000,8 @@ function main()
 	
 //	if (game_load("Save",0)<=0){game_save("Save",0,SV_VARS);}
 	
-	FContinueGame();
-//FLoadLevel3();	
+FContinueGame();
+//FLoadLevel4();	
 	wait(-1);	
 	sky_color.red = 0;
 sky_color.green = 0;
